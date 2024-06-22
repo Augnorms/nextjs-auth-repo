@@ -101,12 +101,13 @@ export default function Register() {
   //submitting form
   const handleSubmit = createSubmitHandler(
     formData,
-    "http://localhost:3000/register",
+    "http://localhost:3001/api/register",
     setSuccess,
     setFailed,
     setIsLoading,
     resetForm
   );
+  
 
   return (
     <div className="w-full h-screen">
