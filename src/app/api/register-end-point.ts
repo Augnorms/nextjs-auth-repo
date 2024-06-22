@@ -14,7 +14,8 @@ export const createSubmitHandler = <T>(
   endpoint: string,
   callbackone: React.Dispatch<React.SetStateAction<boolean>>,
   callbacktwo: React.Dispatch<React.SetStateAction<boolean>>,
-  callbackLoader: React.Dispatch<React.SetStateAction<boolean>>
+  callbackLoader: React.Dispatch<React.SetStateAction<boolean>>,
+  restcallback:()=>void
 ) => {
   return async () => {
     try {
@@ -25,6 +26,7 @@ export const createSubmitHandler = <T>(
         setTimeout(() => {
           callbackone(false);
         }, 3000);
+        restcallback();
       } else {
         callbacktwo(true);
         setTimeout(() => {

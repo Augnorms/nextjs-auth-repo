@@ -2,14 +2,16 @@
 
 import { createSubmitHandler } from "@/app/api/register-end-point";
 import Topnav from "@/app/component/topNav";
-import { handleType } from "@/app/helpers/helpers";
-import { handlelabel } from "@/app/helpers/helpers";
-import { handleplaceholder } from "@/app/helpers/helpers";
+import {
+  handleType,
+  handlelabel,
+  handleplaceholder,
+} from "@/app/helpers/helpers";
 import { useState } from "react";
 
 export default function Register() {
   const [firstname, setFirstname] = useState<string>("");
-  const [lastname, setlastname] = useState<string>("");
+  const [lastname, setLastname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [repeatpass, setRepeatpass] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -18,7 +20,7 @@ export default function Register() {
   const [dateofbirth, setDateofbirth] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
-  const [isLoading, setIsloading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleValue = (idx: number) => {
     switch (idx) {
@@ -51,7 +53,7 @@ export default function Register() {
         setFirstname(value);
         break;
       case "2":
-        setlastname(value);
+        setLastname(value);
         break;
       case "3":
         setPassword(value);
@@ -85,13 +87,25 @@ export default function Register() {
     dateofbirth,
   };
 
+  const resetForm = () => {
+    setFirstname("");
+    setLastname("");
+    setPassword("");
+    setRepeatpass("");
+    setEmail("");
+    setPhonenumber("");
+    setCountry("");
+    setDateofbirth("");
+  };
+
   //submitting form
   const handleSubmit = createSubmitHandler(
     formData,
     "http://localhost:3000/register",
     setSuccess,
     setFailed,
-    setIsloading
+    setIsLoading,
+    resetForm
   );
 
   return (
@@ -155,15 +169,23 @@ export default function Register() {
                   </div>
                 ))}
               <div className="w-full p-0 mt-4 shadow text-center">
-                <button className="w-full p-2 flex justify-center">
-                  <img src="/googleicon.svg" className="w-8" />
+                <button className="w-full p-2 flex justify-center"
+                   onClick={() => window.location.href = 'http://localhost:3000/auth/google'}
+                >
+                  <img src="/googleicon.svg" className="w-8"/>
                 </button>
               </div>
 
               <div className="w-full p-0 mt-4 shadow">
                 <button
-                  className="w-full p-2 font-bold text-white bg-[dodgerblue] rounded"
+                  className={`w-full p-2 font-bold text-white bg-[dodgerblue] rounded 
+                  ${
+                    firstname === "" || lastname === ""
+                      ? "cursor-not-allowed"
+                      : "bg-[dodgerblue] cursor-pointer"
+                  }`}
                   onClick={handleSubmit}
+                  disabled={firstname === "" && lastname === ""}
                 >
                   {isLoading && "...loading"}
                   Register
