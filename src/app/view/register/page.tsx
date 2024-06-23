@@ -1,15 +1,19 @@
 "use client";
 
 import { createSubmitHandler } from "@/app/api/register-end-point";
+import { getResponse } from "@/app/api/fetch-end-point";
+import { updateResponse } from "@/app/api/update-end-point";
 import Topnav from "@/app/component/topNav";
 import {
   handleType,
   handlelabel,
   handleplaceholder,
 } from "@/app/helpers/helpers";
-import { useState } from "react";
+import {  useEffect, useState } from "react";
+import { IRegistration } from "@/app/interface/interfaces";
 
 export default function Register() {
+  const [userid, setUserid] = useState<number>(0);
   const [firstname, setFirstname] = useState<string>("");
   const [lastname, setLastname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,6 +25,18 @@ export default function Register() {
   const [success, setSuccess] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [data, setData] = useState<IRegistration>({
+  id: 0,
+  firstname: "",
+  lastname: "",
+  password: "",
+  email: "",
+  phonenumber: "",
+  dateofbirth: "",
+  country: "",
+  });
+  const [_message, setMessage] = useState<string>("");
+  const[updateStatus, setUPdateStatus] = useState<boolean>(false);
 
   const handleValue = (idx: number) => {
     switch (idx) {
@@ -101,13 +117,61 @@ export default function Register() {
   //submitting form
   const handleSubmit = createSubmitHandler(
     formData,
-    "http://localhost:3001/api/register",
+    "http://localhost:3000/api/register",
     setSuccess,
     setFailed,
     setIsLoading,
     resetForm
   );
+
+  let id = 2
+  //fetch data
+  const handleFetchData = async()=>{
+     await getResponse(
+        `http://localhost:3000/api/fetchdata/${id}`,
+        setIsLoading,
+        setData,
+        setMessage
+      );
+
+      setUPdateStatus(true)
+  }
+
+  //update endpoint
+  const updateData = {
+    userid,  
+    firstname,
+    lastname,
+    password,
+    repeatpass,
+    email,
+    phonenumber,
+    country,
+    dateofbirth,
+  };
+
+  const handleUpdate = async()=>{
+   await updateResponse(
+      updateData,
+      "http://localhost:3000/api/editregister",
+      setSuccess,
+      setFailed,
+      setIsLoading,
+      resetForm
+    )
+  }
   
+  useEffect(() => {
+    setUserid(data?.id);
+    setFirstname(data?.firstname);
+    setLastname(data?.lastname)
+    setPassword(data?.password)
+    setRepeatpass(data?.password)
+    setEmail(data?.email)
+    setPhonenumber(data?.phonenumber)
+    setCountry(data?.country)
+    setDateofbirth(data?.dateofbirth)
+  }, [data]);
 
   return (
     <div className="w-full h-screen">
@@ -145,7 +209,7 @@ export default function Register() {
           </div>
 
           <div className="w-full p-1 mt-5 text-center">
-            <h1 className="text-[25px] font-bold text-[dodgerblue] underline">
+            <h1 className="text-[25px] font-bold text-[dodgerblue] underline cursor-pointer" onClick={handleFetchData}>
               Registration form
             </h1>
           </div>
@@ -173,7 +237,7 @@ export default function Register() {
                 <button className="w-full p-2 flex justify-center"
                    onClick={() => window.location.href = 'http://localhost:3000/auth/google'}
                 >
-                  <img src="/googleicon.svg" className="w-8"/>
+                  <img src="/googleicon.svg" className="w-8" alt="googleicon"/>
                 </button>
               </div>
 
@@ -185,11 +249,11 @@ export default function Register() {
                       ? "cursor-not-allowed"
                       : "bg-[dodgerblue] cursor-pointer"
                   }`}
-                  onClick={handleSubmit}
+                  onClick={updateStatus ? handleUpdate : handleSubmit}
                   disabled={firstname === "" && lastname === ""}
                 >
                   {isLoading && "...loading"}
-                  Register
+                  {updateStatus ? 'Update' : 'Register'}
                 </button>
               </div>
             </div>
@@ -199,3 +263,7 @@ export default function Register() {
     </div>
   );
 }
+function async<T>() {
+  throw new Error("Function not implemented.");
+}
+
